@@ -1,0 +1,91 @@
+#date_picker {
+    width: 250px;
+    margin: auto;
+    font-family: Verdana, sans-serif;
+    color: #666666;
+    text-align: center;
+}
+.dpHeader {
+    border: 1px solid #DDDDDD;
+    height: 30px;
+    line-height: 30px;
+}
+.dpMonth {
+    width: 60%;
+    float: left;
+}
+.dpYear {
+    width: 40%;
+    float: right;
+}
+.dpYear, .dpMonth {
+    position: relative;
+}
+.dpButton {
+    width: 50%;
+    height: 100%;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+}
+.dpHeaderContent {
+    font-size: 16px;
+}
+.dpPrev {
+    float: left;
+    left: 0;
+}
+.dpNext {
+    float: right;
+    right: 0;
+}
+
+.dpCells table {
+    border-collapse: collapse;
+    vertical-align: middle;
+    width: 100%;
+}
+.dpCells th {
+    font-weight: bold;
+    color: #999999;
+    background-color: #F1F1F1;
+    font-size: 14px;
+}
+.dpCells td {
+    border: 1px solid #DDDDDD;
+    width: 40px;
+    height: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #999999;
+}
+.withData {
+    cursor: pointer;
+}
+.withData:hover {
+    background-color: #999999;
+    color: #fff;
+}
+.selected {
+    background-color: #999999;
+    color: #fff !important;
+}
+.current-day {
+    text-decoration: underline;
+}
+.dpTriangleLeft, .dpTriangleRight {
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+}
+.dpTriangleLeft {
+    border-right: 7px solid #D0CDD0;
+    float: left;
+    margin: 10px 0 0 5px;
+}
+.dpTriangleRight {
+    border-left: 7px solid #D0CDD0;
+    float: right;
+    margin: 10px 10px 5px 0;
+}
