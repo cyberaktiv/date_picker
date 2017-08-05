@@ -1,90 +1,89 @@
-var DatePicker = function(id) {
+var DatePicker = function(id, options) {
 
-    var that = this;
-    var MONTH_NAMES = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
+    options = options || {};
+    var _default = {
+        monthNames: [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        namesDaysWeek: [
+            "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
+        ],
+        weekStart: 0 // 0 - sunday
+    };
 
-    var _year,
-        _month,
-        _day,
-        selectedDates = [];
+    var MONTH_NAMES = options.monthNames    || _default.monthNames,
+        WEEK_DAYS   = options.namesDaysWeek || _default.namesDaysWeek,
+        WEEK_START  = options.weekStart     || _default.weekStart,
+        _year, _month, _day;
 
     (function() {
-        // create DOM-element here
+        createHTMLStructure();
         init(new Date());
         addEventsOnButtons();
         addEventsOnCells();
     })();
 
-    this.setYear = function(value) {
+    function createHTMLStructure() {
 
-        if(value > 10000 || value < 0) return;
-        init(new Date(value, _month, _day));
-    };
+        var i,
+            content =
+                '<div class="dpHeader">' +
+                '   <div class="dpMonth">' +
+                '       <div class="dpPrev dpButton"></div>' +
+                '       <div class="dpTriangleLeft"></div>' +
+                '       <div class="dpNext dpButton"></div>' +
+                '       <div class="dpTriangleRight"></div>' +
+                '       <div class="dpHeaderContent"></div>' +
+                '   </div>' +
+                '   <div class="dpYear">' +
+                '       <div class="dpPrev dpButton"></div>' +
+                '       <div class="dpTriangleLeft"></div>' +
+                '       <div class="dpNext dpButton"></div>' +
+                '       <div class="dpTriangleRight"></div>' +
+                '       <div class="dpHeaderContent"></div>' +
+                '   </div>' +
+                '</div>' +
+                '<div class="dpCells">' +
+                '   <table>' +
+                '       <tr>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '           <th></th>' +
+                '       </tr>';
 
-    this.setMonth = function(value) {
-
-        init(new Date(_year, value, _day));
-    };
-
-    this.getSelectedDates = function() {
-
-        var result = [];
-        for (var key in selectedDates) {
-            result.push(selectedDates[key]);
+        for(i = 0; i < 6; i++) {
+            content +=
+                '       <tr>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '           <td></td>' +
+                '       </tr>';
         }
-        return result;
-    };
 
-    this.getYear = function() {
+        content += '</table>' +
+                '</div>'
 
-        return _year;
-    };
-
-    this.getMonth = function(string) {
-
-        return (string)?MONTH_NAMES[_month]:_month;
-    };
-
-    this.unSelectedAllDates = function() {
-
-        selectedDates = [];
-        init();
-    };
-
-    this.selectDates = function(values) {
-
-        if (Array.isArray(values)) {
-            for (var i = 0; i < values.length; i++) {
-                selectedDates[(values[i].getFullYear() + "-" + values[i].getMonth() + "-" + values[i].getDate())] = values[i];
-            }
-        } else {
-            var date = values;
-            selectedDates[(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate())] = date;
-        }
-        init();
-    };
-
-    this.unSelectDate = function(date) {
-
-        if (selectedDates[(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate())]) {
-
-            delete selectedDates[(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate())];
-            init();
-        }
-    };
+        document.querySelector('#' + id).innerHTML = content
+    }
 
     function init(date) {
 
@@ -94,11 +93,19 @@ var DatePicker = function(id) {
         _month = date.getMonth();
         _day = date.getDate();
 
-        var countDays = getLastDayOfMonth(date),
-            begin = getBeginPosition(date);
-
         document.querySelector("#" + id + " .dpMonth .dpHeaderContent").innerHTML = MONTH_NAMES[_month];
         document.querySelector("#" + id + " .dpYear .dpHeaderContent").innerHTML = _year;
+
+        var ths = document.querySelectorAll("#" + id + " .dpCells th"),
+            countTh = ths.length,
+            i;
+
+        for(i = 0; i < countTh; i++) {
+            ths[i].innerHTML = WEEK_DAYS[i];
+        }
+
+        var countDays = getLastDayOfMonth(date),
+            begin = getBeginPosition(date);
 
         fillCellsOfDays(begin, countDays);
     }
@@ -116,16 +123,8 @@ var DatePicker = function(id) {
 
                 day = parseInt(cell.innerHTML);
 
-                if (!cell.classList.contains("selected")) {
-
-                    date = new Date(_year, _month, day);
-                    selectedDates[(_year + "-" + _month + "-" + day)] = date;
-                    cell.classList.add("selected");
-                } else {
-
-                    delete selectedDates[(_year + "-" + _month + "-" + day)];
-                    cell.classList.remove("selected");
-                }
+                date = new Date(_year, _month, day);
+                console.log(date);
             }
         });
     }
@@ -142,26 +141,39 @@ var DatePicker = function(id) {
             var year = event.target.parentNode.classList.contains("dpYear");
 
             if (next && year) {
-                that.setYear(_year + 1);
+                setYear(_year + 1);
             }
             if (next && month) {
-                that.setMonth(_month + 1);
+                setMonth(_month + 1);
             }
             if (prev && year) {
-                that.setYear(_year - 1);
+                setYear(_year - 1);
             }
             if (prev && month) {
-                that.setMonth(_month - 1);
+                setMonth(_month - 1);
             }
         });
+    }
+
+    function getLastDayOfMonth(date) {
+
+        var tmpDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        return tmpDate.getDate();
+    }
+
+    function getBeginPosition(date) {
+
+        var tmpDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        return tmpDate.getDay();
     }
 
     function fillCellsOfDays(begin, countDays) {
 
         var cells = document.querySelectorAll("#" + id + " .dpCells td"),
-            data = createArrayOfDays(begin, countDays);
+            data = createArrayOfDays(begin, countDays),
+            i;
 
-        for (var i = 0; i < cells.length; i++) {
+        for (i = 0; i < cells.length; i++) {
 
             var datesEqual = datesAreEqual(
                 new Date(),
@@ -174,7 +186,6 @@ var DatePicker = function(id) {
                 cells[i].classList.remove("current-day");
             }
 
-            cells[i].classList.remove("selected");
             if (cells[i].classList.contains("withData") && data[i] === "") {
                 cells[i].classList.remove("withData");
             }
@@ -182,33 +193,23 @@ var DatePicker = function(id) {
 
             if (data[i] !== "") {
                 cells[i].classList.add("withData");
-
-                if (typeof selectedDates[(_year + "-" + _month + "-" + data[i])] !== 'undefined') {
-                    cells[i].classList.add("selected");
-                }
             }
         }
     }
 
-    function datesAreEqual(first, second) {
-
-        return (
-            first.getFullYear() === second.getFullYear() &&
-            first.getMonth() === second.getMonth() &&
-            first.getDate() === second.getDate()
-        );
-    }
-
     function createArrayOfDays(begin, countDays) {
 
-        begin--;
+        begin = begin - WEEK_START;
+        begin = (begin < 0) ? begin + 7 : begin;
+
         var result = [],
             countCells = 42,
             counter = 0,
             positionBeforeBegin = 0,
-            dayNumber;
+            dayNumber,
+            i;
 
-        for (var i = 1; i <= countCells; i++) {
+        for (i = 1; i <= countCells; i++) {
 
             if (begin <= counter) {
                 dayNumber = i - positionBeforeBegin;
@@ -226,16 +227,23 @@ var DatePicker = function(id) {
         return result;
     }
 
-    function getLastDayOfMonth(date) {
+    function datesAreEqual(first, second) {
 
-        var tmpDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        return tmpDate.getDate();
+        return (
+            first.getFullYear() === second.getFullYear() &&
+            first.getMonth() === second.getMonth() &&
+            first.getDate() === second.getDate()
+        );
     }
 
-    function getBeginPosition(date) {
+    function setYear(value) {
 
-        var tmpDate = new Date(date.getFullYear(), date.getMonth(), 1);
-        // 1, 2, 3, 4, 5, 6, 0 - seven for zero
-        return tmpDate.getDay() || 7;
+        if(value > 10000 || value < 0) return;
+        init(new Date(value, _month, _day));
+    }
+
+    function setMonth(value) {
+
+        init(new Date(_year, value, _day));
     }
 };

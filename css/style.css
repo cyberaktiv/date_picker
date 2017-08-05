@@ -46,17 +46,15 @@
     width: 100%;
 }
 .dpCells th {
-    font-weight: bold;
     color: #999999;
     background-color: #F1F1F1;
-    font-size: 14px;
+    font-size: 13px;
 }
 .dpCells td {
     border: 1px solid #DDDDDD;
-    width: 40px;
+    width: 14.28%;
     height: 25px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 15px;
     color: #999999;
 }
 .withData {
@@ -65,10 +63,6 @@
 .withData:hover {
     background-color: #999999;
     color: #fff;
-}
-.selected {
-    background-color: #999999;
-    color: #fff !important;
 }
 .current-day {
     text-decoration: underline;
